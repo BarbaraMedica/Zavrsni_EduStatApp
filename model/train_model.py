@@ -44,7 +44,7 @@ study_score = (
 )
 
 noise = np.random.normal(0, 0.5, n)
-label = ((study_score + noise) > 5).astype(int)
+label = ((study_score + noise) > 4.5).astype(int)
 
 df = pd.DataFrame({
     "sleep_hours": sleep_hours,
@@ -56,6 +56,7 @@ df = pd.DataFrame({
     "energy": energy,
     "good_time_to_study": label
 })
+print(df["good_time_to_study"].value_counts())
 
 # 2. PRIPREMA PODATAKA - SPLIT NA TRAIN I TEST SET
 
@@ -63,7 +64,7 @@ X = df.drop("good_time_to_study", axis=1)
 y = df["good_time_to_study"]
 
 X_train, X_test, y_train, y_test = train_test_split(
-    X, y, test_size=0.2, random_state=42
+    X, y, test_size=0.2, random_state=42 #podjela na 20/80
 )
 
 # 3. LOGISTIČKA REGRESIJA - BASIC MODEL
@@ -150,7 +151,7 @@ if isinstance(best_model, RandomForestClassifier):
 
     plt.close()
 #rezultat
-    results = pd.DataFrame({
+results = pd.DataFrame({
     "Model": [
         "Logistic Regression",
         "Random Forest"

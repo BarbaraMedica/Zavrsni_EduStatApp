@@ -1,11 +1,17 @@
+import os
 from flask import Flask, request, jsonify
+from flask.cli import load_dotenv
+from flask_cors import CORS
 import joblib
 import numpy as np
 
-app = Flask(__name__)
 
-# Učitaj model
-model = joblib.load("../model/model.pkl")
+load_dotenv()
+app = Flask(__name__)
+CORS(app)
+
+MODEL_PATH = os.path.join(os.path.dirname(__file__), "..", "model", "model.pkl")
+model = joblib.load(MODEL_PATH)
 
 
 @app.route("/predict", methods=["POST"])
