@@ -4,12 +4,30 @@ import numpy as np
 
 app = Flask(__name__)
 
-# učitaj model
+# Učitaj model
 model = joblib.load("../model/model.pkl")
+
 
 @app.route("/predict", methods=["POST"])
 def predict():
     data = request.get_json()
+
+    # Provjera jesu li sva polja poslana
+    required_fields = [
+        "sleep_hours",
+        "study_duration",
+        "breaks",
+        "time_of_day",
+        "focus",
+        "stress",
+        "energy"
+    ]
+
+    for field in required_fields:
+        if field not in data:
+            return jsonify({
+                "error": f"Nedostaje polje: {field}"
+            }), 400
 
     try:
         sleep_hours = float(data["sleep_hours"])
@@ -30,21 +48,27 @@ def predict():
             energy
         ]])
 
-        prediction = model.predict(features)
-        probability = model.predict_proba(features)[0][1]
+        prediction = model.predict(features)[0]
 
-        if prediction[0] == 1:
+        if hasattr(model, "predict_proba"):
+            probability = round(float(model.predict_proba(features)[0][1]), 2)
+        else:
+            probability = None
+
+        if prediction == 1:
             result = "Dobro vrijeme za učenje"
         else:
             result = "Nije dobro vrijeme za učenje"
 
         return jsonify({
             "rezultat": result,
-            "vjerojatnost": round(float(probability), 2)
+            "vjerojatnost": probability
         })
 
-    except KeyError as e:
-        return jsonify({"error": f"Nedostaje podatak: {str(e)}"}), 400
+    except (KeyError, ValueError) as e:
+        return jsonify({
+            "error": str(e)
+        }), 400
 
 
 if __name__ == "__main__":

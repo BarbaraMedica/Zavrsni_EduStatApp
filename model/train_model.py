@@ -1,9 +1,18 @@
 import pandas as pd
 import numpy as np
+import matplotlib.pyplot as plt
+
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LogisticRegression
 from sklearn.ensemble import RandomForestClassifier
-from sklearn.metrics import accuracy_score
+
+from sklearn.metrics import (
+    accuracy_score,
+    classification_report,
+    confusion_matrix,
+    ConfusionMatrixDisplay
+)
+
 import joblib
 
 # 1. GENERIRANJE PODATAKA - SIMULACIJA STUDENTSKE RUTINE
@@ -80,6 +89,21 @@ rf_acc = accuracy_score(y_test, rf_pred)
 print(f"Logistic Regression točnost: {lr_acc:.2f}")
 print(f"Random Forest točnost: {rf_acc:.2f}")
 
+print("\nEvaluacija Random Forest modela")
+
+print(classification_report(y_test, rf_pred))
+
+cm = confusion_matrix(y_test, rf_pred)
+
+print("Confusion Matrix:")
+print(cm)
+
+disp = ConfusionMatrixDisplay(confusion_matrix=cm)
+disp.plot()
+
+plt.title("Confusion Matrix - Random Forest")
+plt.savefig("model/confusion_matrix.png")
+plt.close()
 # 6. ODABIR NAJBOLJEG MODELA
 
 if rf_acc > lr_acc:
@@ -89,10 +113,12 @@ else:
     best_model = lr_model
     print("Odabran model: Logistic Regression")
 
-# 7. FEATURE IMPORTANCE 
+# 7. FEATURE IMPORTANCE
 
 if isinstance(best_model, RandomForestClassifier):
+
     importances = best_model.feature_importances_
+
     feature_names = X.columns
 
     feat_df = pd.DataFrame({
@@ -102,6 +128,43 @@ if isinstance(best_model, RandomForestClassifier):
 
     print("\nVažnost varijabli:")
     print(feat_df)
+
+    feat_df.to_csv("model/feature_importance.csv", index=False)
+
+    plt.figure(figsize=(8,5))
+
+    plt.bar(
+        feat_df["feature"],
+        feat_df["importance"]
+    )
+
+    plt.title("Važnost varijabli")
+    plt.xlabel("Varijabla")
+    plt.ylabel("Važnost")
+
+    plt.xticks(rotation=45)
+
+    plt.tight_layout()
+
+    plt.savefig("model/feature_importance.png")
+
+    plt.close()
+#rezultat
+    results = pd.DataFrame({
+    "Model": [
+        "Logistic Regression",
+        "Random Forest"
+    ],
+    "Accuracy": [
+        lr_acc,
+        rf_acc
+    ]
+})
+
+results.to_csv(
+    "model/model_results.csv",
+    index=False
+)
 
 # 8. SPREMANJE
 
