@@ -1,119 +1,415 @@
 <template>
-  <div class="min-h-screen bg-sky-50 flex justify-center p-6">
+  <div
+    :class="darkMode ? 'bg-slate-900 text-white' : 'bg-sky-50 text-slate-800'"
+    class="min-h-screen transition-all duration-300 p-6"
+  >
 
-    <div class="w-full max-w-3xl bg-white rounded-2xl shadow-sm border border-sky-100 p-6">
+    <Sidebar :darkMode="darkMode" />
 
-    <h2 class="text-2xl font-semibold text-sky-700 mb-6">Analiza učenja</h2>
+    <div class="max-w-4xl mx-auto">
 
-    <div class="grid grid-cols-2 gap-4">
-      <input v-model="form.sleep_hours" type="number" placeholder="Sati sna" />
-      <input v-model="form.study_duration" type="number" placeholder="Trajanje učenja (min)" />
-      <input v-model="form.breaks" type="number" placeholder="Broj pauza" />
-      <input v-model="form.time_of_day" type="number" placeholder="Vrijeme (0-23)" />
-      <input v-model="form.focus" type="number" placeholder="Fokus (1-10)" />
-      <input v-model="form.stress" type="number" placeholder="Stres (1-10)" />
-      <input v-model="form.energy" type="number" placeholder="Energija (1-10)" />
+      <div
+        class="bg-white rounded-2xl shadow-sm border border-sky-100 p-8"
+        :class="darkMode ? 'bg-slate-800 border-slate-700' : ''"
+      >
+
+        <h1 class="text-2xl font-bold mb-6">
+          AI analiza učenja
+        </h1>
+
+
+        <!-- INPUT FORMA -->
+
+        <div class="grid grid-cols-2 gap-4">
+
+
+          <div>
+            <label>Datum</label>
+            <input
+              v-model="form.date"
+              type="date"
+              class="input"
+            />
+          </div>
+
+
+          <div>
+            <label>Predmet</label>
+            <input
+              v-model="form.subject"
+              type="text"
+              placeholder="npr. Matematika"
+              class="input"
+            />
+          </div>
+
+
+          <div>
+            <label>Sati sna</label>
+            <input
+              v-model.number="form.sleep_hours"
+              type="number"
+              class="input"
+            />
+          </div>
+
+
+          <div>
+            <label>Trajanje učenja (min)</label>
+            <input
+              v-model.number="form.study_duration"
+              type="number"
+              class="input"
+            />
+          </div>
+
+
+          <div>
+            <label>Broj pauza</label>
+
+            <input
+              v-model.number="form.breaks"
+              type="number"
+              class="input"
+            />
+
+          </div>
+
+
+
+          <div>
+
+            <label>Dio dana</label>
+
+            <select
+              v-model.number="form.time_of_day"
+              class="input"
+            >
+
+              <option :value="0">
+                Jutro
+              </option>
+
+              <option :value="1">
+                Podne
+              </option>
+
+              <option :value="2">
+                Popodne
+              </option>
+
+              <option :value="3">
+                Večer
+              </option>
+
+            </select>
+
+          </div>
+
+
+
+
+          <div>
+
+            <label>Fokus (1-10)</label>
+
+            <input
+              v-model.number="form.focus"
+              type="number"
+              min="1"
+              max="10"
+              class="input"
+            />
+
+          </div>
+
+
+
+          <div>
+
+            <label>Stres (1-10)</label>
+
+            <input
+              v-model.number="form.stress"
+              type="number"
+              min="1"
+              max="10"
+              class="input"
+            />
+
+          </div>
+
+
+
+          <div>
+
+            <label>Energija (1-10)</label>
+
+            <input
+              v-model.number="form.energy"
+              type="number"
+              min="1"
+              max="10"
+              class="input"
+            />
+
+          </div>
+
+
+        </div>
+
+
+
+        <!-- BUTTON -->
+
+        <button
+          @click="predict"
+          :disabled="loading"
+          class="mt-6 w-full bg-indigo-600 hover:bg-indigo-700 text-white py-3 rounded-xl"
+        >
+
+          {{ loading ? "Analiziram..." : "Pokreni AI analizu" }}
+
+        </button>
+
+
+
+        <!-- REZULTAT -->
+
+
+        <div
+          v-if="result"
+          class="mt-8 p-6 rounded-xl border"
+          :class="resultClass"
+        >
+
+
+          <h2 class="text-xl font-bold mb-3">
+            Rezultat modela
+          </h2>
+
+
+          <p class="text-lg">
+            {{ result }}
+          </p>
+
+
+          <p class="mt-2">
+            Vjerojatnost:
+            <strong>
+              {{ probability }}%
+            </strong>
+          </p>
+
+
+
+          <hr class="my-5">
+
+
+
+          <h2 class="text-xl font-bold mb-3">
+            AI preporuka
+          </h2>
+
+
+
+          <p class="whitespace-pre-line">
+            {{ advice }}
+          </p>
+
+
+        </div>
+
+
+
+      </div>
+
     </div>
 
-    <button class="btn" @click="predict">Analiziraj</button>
-
-    <div v-if="result" class="mt-6 p-4 rounded-xl bg-sky-50 border border-sky-100" :class="resultClass">
-      <h3>{{ result }}</h3>
-      <p class="text-slate-500">Vjerojatnost: {{ probability }}</p>
-      <p class="mt-2 text-slate-600">{{ advice }}</p>
-    </div>
-  </div>
   </div>
 </template>
 
+
+
+
 <script setup>
-import { ref } from 'vue'
-import axios from 'axios'
+
+import { ref } from "vue"
+import axios from "axios"
+import Sidebar from "../components/Sidebar.vue"
+
+
+
+const darkMode = ref(false)
+
+
+
+const loading = ref(false)
+
+
 
 const form = ref({
-  sleep_hours: 7,
-  study_duration: 90,
-  breaks: 2,
-  time_of_day: 14,
-  focus: 7,
-  stress: 4,
-  energy: 8
+
+  date:
+    new Date()
+    .toISOString()
+    .split("T")[0],
+
+
+  subject:"",
+
+
+  sleep_hours:7,
+
+
+  study_duration:90,
+
+
+  breaks:2,
+
+
+  time_of_day:0,
+
+
+  focus:7,
+
+
+  stress:4,
+
+
+  energy:8
+
 })
 
-const result = ref('')
-const probability = ref('')
-const advice = ref('')
-const resultClass = ref('')
 
-const predict = async () => {
-  try {
-    const res = await axios.post('http://127.0.0.1:5000/predict', form.value)
 
-    result.value = res.data.rezultat
-    probability.value = res.data.vjerojatnost
 
-    if (result.value.includes("Dobro")) {
-      resultClass.value = "good"
-    } else {
-      resultClass.value = "bad"
+const result = ref("")
+const probability = ref("")
+const advice = ref("")
+
+const resultClass = ref("")
+
+
+
+
+
+
+async function predict(){
+
+
+  try{
+
+
+    loading.value=true
+
+
+
+    const response = await axios.post(
+
+      "http://127.0.0.1:5000/analyze",
+
+      form.value
+
+    )
+
+
+
+    result.value =
+      response.data.prediction
+
+
+
+    probability.value =
+      response.data.probability
+
+
+
+    advice.value =
+      response.data.ai_analysis
+
+
+
+
+    if(
+      result.value
+      .toLowerCase()
+      .includes("dobro")
+    ){
+
+      resultClass.value =
+        "bg-green-50 border-green-200 text-green-800"
+
     }
 
-    generateAdvice()
+    else{
 
-  } catch (err) {
-    alert("Greška pri pozivu backenda")
+      resultClass.value =
+        "bg-red-50 border-red-200 text-red-800"
+
+    }
+
+
+
   }
+
+
+  catch(error){
+
+
+    console.error(error)
+
+
+    alert(
+      "Greška pri povezivanju s AI analizom"
+    )
+
+
+  }
+
+
+  finally{
+
+    loading.value=false
+
+  }
+
+
 }
 
-function generateAdvice() {
-  if (form.value.sleep_hours < 6) {
-    advice.value = "Premalo sna smanjuje fokus. Pokušaj spavati barem 7h."
-  } else if (form.value.stress > 7) {
-    advice.value = "Visok stres - preporučuje se pauza prije učenja."
-  } else if (form.value.study_duration > 120) {
-    advice.value = "Dugo učiš - napravi kratku pauzu."
-  } else {
-    advice.value = "Nastavi s dobrim navikama!"
-  }
-}
+
+
 </script>
 
-<style>
-.card {
-  background: white;
-  padding: 25px;
-  border-radius: 12px;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+
+
+
+
+<style scoped>
+
+
+.input{
+
+  width:100%;
+  padding:10px;
+  margin-top:5px;
+
+  border-radius:10px;
+
+  border:1px solid #cbd5e1;
+
+  background:white;
+
 }
 
-.grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 10px;
-  margin-bottom: 20px;
+
+label{
+
+  font-size:14px;
+
+  font-weight:600;
+
 }
 
-.btn {
-  background: #4f46e5;
-  color: white;
-  padding: 10px;
-  border: none;
-  cursor: pointer;
-}
 
-.result {
-  margin-top: 20px;
-  padding: 15px;
-  border-radius: 10px;
-}
-
-.good {
-  background: #dcfce7;
-  color: #166534;
-}
-
-.bad {
-  background: #fee2e2;
-  color: #991b1b;
-}
 </style>

@@ -5,58 +5,7 @@
   >
 
     <div class="flex">
-
-      <!-- SIDEBAR -->
-      <aside
-        :class="darkMode
-          ? 'bg-slate-800 border-slate-700'
-          : 'bg-white border-sky-100'"
-        class="w-72 min-h-screen border-r p-5 hidden lg:block"
-      >
-
-        <div class="mb-8">
-          <h1 class="text-3xl font-bold text-sky-600">
-            StudyAI
-          </h1>
-
-          <p
-            :class="darkMode ? 'text-slate-400' : 'text-slate-500'"
-            class="text-sm mt-1"
-          >
-            AI analiza studentskih navika
-          </p>
-        </div>
-
-        <!-- MENU -->
-        <div class="space-y-2">
-
-          <div class="p-3 rounded-xl hover:bg-sky-50 transition cursor-pointer text-slate-600">
-            📊 Dashboard
-          </div>
-
-          <div class="p-3 rounded-xl hover:bg-sky-50 transition cursor-pointer text-slate-600">
-            🧠 AI analiza
-          </div>
-
-          <div class="p-3 rounded-xl bg-sky-100 text-sky-700 font-medium cursor-pointer">
-            ✍️ Zapisivanje
-          </div>
-
-          <div class="p-3 rounded-xl hover:bg-sky-50 transition cursor-pointer text-slate-600">
-            📈 Statistika
-          </div>
-
-          <div class="p-3 rounded-xl hover:bg-sky-50 transition cursor-pointer text-slate-600">
-            📚 Predmeti
-          </div>
-
-          <div class="p-3 rounded-xl hover:bg-sky-50 transition cursor-pointer text-slate-600">
-            ⚙️ Postavke
-          </div>
-
-        </div>
-
-      </aside>
+      <Sidebar :darkMode="darkMode" />
 
       <!-- MAIN -->
       <main class="flex-1 p-6">
@@ -149,10 +98,10 @@
                     : 'bg-sky-50 border-sky-100'"
                   class="w-full mt-2 p-3 rounded-xl border focus:ring-2 focus:ring-sky-400 outline-none"
                 >
-                  <option value="jutro">🌅 Jutro</option>
-                  <option value="podne">☀️ Podne</option>
-                  <option value="popodne">🌤 Popodne</option>
-                  <option value="večer">🌙 Večer</option>
+                  <option value="0">🌅 Jutro</option>
+                  <option value="1">☀️ Podne</option>
+                  <option value="2">🌤 Popodne</option>
+                  <option value="3">🌙 Večer</option>
                 </select>
               </div>
 
@@ -163,7 +112,7 @@
 
                 <input
                   type="number"
-                  v-model="form.study_time"
+                  v-model="form.study_duration"
                   placeholder="npr. 90"
                   :class="darkMode
                     ? 'bg-slate-700 border-slate-600 text-white'
@@ -339,8 +288,16 @@
                   Predikcija produktivnosti
                 </p>
 
-                <div class="text-5xl font-bold text-sky-600">
-                  82%
+                <div 
+                class="text-3xl font-bold text-sky-600"
+                >
+
+                {{ 
+                result 
+                ? result.rezultat 
+                : "Čeka analizu..." 
+                }}
+
                 </div>
               </div>
 
@@ -384,39 +341,120 @@
 </template>
 
 <script setup>
+
 import { ref } from 'vue'
+import axios from 'axios'
+import Sidebar from '../components/Sidebar.vue'
 
 const darkMode = ref(false)
 
+
+
+const result = ref(null)
+
+
+
 const form = ref({
-  date: new Date().toISOString().split('T')[0],
-  subject: '',
-  study_time: '',
-  time_of_day: 'jutro',
-  focus: 5,
-  stress: 5,
-  energy: 5,
-  sleep_hours: 7,
-  breaks: 2,
-  notes: ''
+
+  date: new Date()
+    .toISOString()
+    .split('T')[0],
+
+
+  subject:'',
+
+  study_duration:'',
+
+  time_of_day:0,
+
+  focus:5,
+
+  stress:5,
+
+  energy:5,
+
+  sleep_hours:7,
+
+  breaks:2,
+
+  notes:''
+
 })
 
-function save() {
-  let history =
-    JSON.parse(localStorage.getItem("history")) || []
 
-  history.push({
-    ...form.value,
-    timestamp: new Date()
-  })
 
-  localStorage.setItem(
-    "history",
-    JSON.stringify(history)
-  )
 
-  alert("AI analiza spremljena")
+
+async function save(){
+
+
+try{
+
+
+const response = await axios.post(
+
+"http://127.0.0.1:5000/predict",
+
+{
+
+
+sleep_hours:Number(form.value.sleep_hours),
+
+
+study_duration:Number(form.value.study_duration),
+
+
+breaks:Number(form.value.breaks),
+
+
+time_of_day:Number(form.value.time_of_day),
+
+
+focus:Number(form.value.focus),
+
+
+stress:Number(form.value.stress),
+
+
+energy:Number(form.value.energy)
+
+
 }
+
+)
+
+
+
+result.value=response.data
+
+
+
+alert(
+"AI analiza spremljena u MongoDB"
+)
+
+
+
+}
+
+catch(error){
+
+
+console.log(error)
+
+
+alert(
+"Greška kod povezivanja s backendom"
+)
+
+
+}
+
+
+
+}
+
+
 </script>
 
 <style>

@@ -4,91 +4,7 @@
     class="min-h-screen transition-all duration-300"
   >
     <div class="flex">
-
-      <!-- SIDEBAR -->
-      <aside
-        :class="darkMode
-          ? 'bg-slate-800 border-slate-700'
-          : 'bg-white border-sky-100'"
-        class="w-72 min-h-screen border-r p-5 hidden lg:block"
-      >
-
-        <!-- LOGO -->
-        <div class="mb-8">
-          <h1 class="text-3xl font-bold text-sky-600">
-            StudyAI
-          </h1>
-
-          <p
-            :class="darkMode ? 'text-slate-400' : 'text-slate-500'"
-            class="text-sm mt-1"
-          >
-            AI analiza studentskih navika
-          </p>
-        </div>
-
-        <!-- MENU -->
-        <div class="space-y-2">
-
-          <div
-            class="p-3 rounded-xl bg-sky-100 text-sky-700 font-medium cursor-pointer"
-          >
-            📊 Dashboard
-          </div>
-
-          <div
-            class="p-3 rounded-xl hover:bg-sky-50 transition cursor-pointer text-slate-600"
-          >
-            🧠 AI analiza
-          </div>
-
-          <div
-            class="p-3 rounded-xl hover:bg-sky-50 transition cursor-pointer text-slate-600"
-          >
-            ✍️ Zapisivanje
-          </div>
-
-          <div
-            class="p-3 rounded-xl hover:bg-sky-50 transition cursor-pointer text-slate-600"
-          >
-            📈 Statistika
-          </div>
-
-          <div
-            class="p-3 rounded-xl hover:bg-sky-50 transition cursor-pointer text-slate-600"
-          >
-            📚 Predmeti
-          </div>
-
-          <div
-            class="p-3 rounded-xl hover:bg-sky-50 transition cursor-pointer text-slate-600"
-          >
-            ⚙️ Postavke
-          </div>
-
-        </div>
-
-        <!-- AI SCORE -->
-        <div
-          :class="darkMode ? 'bg-slate-700' : 'bg-sky-50 border border-sky-100'"
-          class="mt-10 rounded-2xl p-5"
-        >
-
-          <p class="text-sm text-slate-500">
-            AI Score
-          </p>
-
-          <h2 class="text-4xl font-bold text-sky-600 mt-2">
-            82
-          </h2>
-
-          <p class="text-sm text-emerald-500 mt-2">
-            Produktivnost raste 📈
-          </p>
-
-        </div>
-
-      </aside>
+      <Sidebar :darkMode="darkMode" />
 
       <!-- MAIN -->
       <main class="flex-1 p-6">
@@ -370,19 +286,31 @@
 
 <script setup>
 import { ref, onMounted, computed } from 'vue'
+import axios from 'axios'
+import Sidebar from '../components/Sidebar.vue'
 
 const darkMode = ref(false)
-
 const logs = ref([])
+const apiBase = 'http://127.0.0.1:5000'
+
+const loadStatistics = async () => {
+  try {
+    const response = await axios.get(`${apiBase}/statistics`)
+    logs.value = response.data.history || []
+  } catch (error) {
+    console.error('Greška pri dohvaćanju statistike', error)
+    alert('Greška pri učitavanju statistike.')
+  }
+}
 
 onMounted(() => {
-  logs.value = JSON.parse(localStorage.getItem("history")) || []
+  loadStatistics()
 })
 
 const totalHours = computed(() =>
   (
     logs.value.reduce(
-      (s, l) => s + Number(l.study_time || 0),
+      (s, l) => s + Number(l.study_duration || 0),
       0
     ) / 60
   ).toFixed(1)
@@ -392,9 +320,9 @@ const avgProductivity = computed(() =>
   logs.value.length
     ? (
         logs.value.reduce(
-          (s, l) => s + Number(l.focus || 0),
+          (s, l) => s + Number(l.probability || 0),
           0
-        ) / logs.value.length
+        ) / logs.value.length * 10
       ).toFixed(1)
     : 0
 )
@@ -423,13 +351,13 @@ const avgStress = computed(() =>
 
 const chartData = computed(() => {
   const days = [
-    "Pon",
-    "Uto",
-    "Sri",
-    "Čet",
-    "Pet",
-    "Sub",
-    "Ned"
+    'Pon',
+    'Uto',
+    'Sri',
+    'Čet',
+    'Pet',
+    'Sub',
+    'Ned'
   ]
 
   return days.map((day, i) => {
@@ -437,7 +365,7 @@ const chartData = computed(() => {
 
     return {
       day,
-      productivity: entry.focus || 0,
+      productivity: entry.probability ? Number(entry.probability) * 10 : 0,
       stress: entry.stress || 0
     }
   })
