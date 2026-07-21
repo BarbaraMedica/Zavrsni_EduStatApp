@@ -11,7 +11,7 @@
         <div>
 
           <h2
-            class="text-xl font-bold text-slate-800 dark:text-white"
+            class="text-xl font-bold text-slate-800 dark:text-blue-500 truncate"
           >
             {{ subject.name }}
           </h2>
@@ -48,8 +48,8 @@
           ⭐ Fokus
         </span>
 
-        <span class="font-semibold dark:text-white">
-          {{ subject.avg_focus }}/10
+        <span class="font-semibold dark:text-blue-500">
+          {{ subject.avg_focus ?? 0 }}/10
         </span>
 
       </div>
@@ -60,8 +60,8 @@
           😵 Stres
         </span>
 
-        <span class="font-semibold dark:text-white">
-          {{ subject.avg_stress }}/10
+        <span class="font-semibold dark:text-blue-500">
+          {{ subject.avg_stress ?? 0 }}/10
         </span>
 
       </div>
@@ -72,8 +72,8 @@
           ⏱ Trajanje
         </span>
 
-        <span class="font-semibold dark:text-white">
-          {{ subject.avg_duration }} min
+        <span class="font-semibold dark:text-blue-500">
+          {{ subject.avg_duration ?? 0 }} min
         </span>
 
       </div>
@@ -127,9 +127,9 @@
         </p>
 
         <p
-          class="font-medium dark:text-white"
+          class="font-medium dark:text-blue-500"
         >
-          {{ subject.last_session }}
+          {{ subject.last_session || 'N/A' }}
         </p>
 
       </div>

@@ -288,43 +288,29 @@
                   Predikcija produktivnosti
                 </p>
 
-                <div 
-                class="text-3xl font-bold text-sky-600"
-                >
-
-                {{ 
-                result 
-                ? result.rezultat 
-                : "Čeka analizu..." 
-                }}
-
+                <div class="text-3xl font-bold text-sky-600">
+                  {{ result ? result.prediction : 'Čeka analizu...' }}
                 </div>
               </div>
 
               <div class="bg-sky-50 rounded-2xl p-4 border border-sky-100">
-
                 <h3 class="font-semibold text-sky-700 mb-2">
                   AI Insight
                 </h3>
 
                 <p class="text-sm text-slate-600 leading-relaxed">
-                  Student pokazuje najbolji fokus tijekom jutarnjih sati.
-                  Visoka razina energije pozitivno utječe na produktivnost.
+                  {{ result ? result.ai_analysis : 'Nakon spremanja podataka, ovdje će se pojaviti AI analiza.' }}
                 </p>
-
               </div>
 
               <div class="bg-emerald-50 rounded-2xl p-4 border border-emerald-100">
-
                 <h3 class="font-semibold text-emerald-700 mb-2">
-                  Preporuka
+                  Vjerojatnost
                 </h3>
 
                 <p class="text-sm text-slate-600 leading-relaxed">
-                  Nastaviti s kraćim intervalima učenja i povećati broj pauza
-                  tijekom dužih sesija.
+                  {{ result ? `${result.probability}%` : '—' }}
                 </p>
-
               </div>
 
             </div>
@@ -385,73 +371,27 @@ const form = ref({
 
 
 
-async function save(){
+async function save() {
+  try {
+    const response = await axios.post('http://127.0.0.1:5000/analyze', {
+      date: form.value.date,
+      subject: form.value.subject,
+      sleep_hours: Number(form.value.sleep_hours),
+      study_duration: Number(form.value.study_duration),
+      breaks: Number(form.value.breaks),
+      time_of_day: Number(form.value.time_of_day),
+      focus: Number(form.value.focus),
+      stress: Number(form.value.stress),
+      energy: Number(form.value.energy),
+      notes: form.value.notes
+    })
 
-
-try{
-
-
-const response = await axios.post(
-
-"http://127.0.0.1:5000/predict",
-
-{
-
-
-sleep_hours:Number(form.value.sleep_hours),
-
-
-study_duration:Number(form.value.study_duration),
-
-
-breaks:Number(form.value.breaks),
-
-
-time_of_day:Number(form.value.time_of_day),
-
-
-focus:Number(form.value.focus),
-
-
-stress:Number(form.value.stress),
-
-
-energy:Number(form.value.energy)
-
-
-}
-
-)
-
-
-
-result.value=response.data
-
-
-
-alert(
-"AI analiza spremljena u MongoDB"
-)
-
-
-
-}
-
-catch(error){
-
-
-console.log(error)
-
-
-alert(
-"Greška kod povezivanja s backendom"
-)
-
-
-}
-
-
-
+    result.value = response.data
+    alert('AI analiza spremljena u MongoDB')
+  } catch (error) {
+    console.error(error)
+    alert('Greška kod povezivanja s backendom')
+  }
 }
 
 

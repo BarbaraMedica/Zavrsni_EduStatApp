@@ -31,7 +31,7 @@
               class="w-full rounded-xl border border-slate-300 dark:border-slate-700
                      bg-white dark:bg-slate-800 px-4 py-3
                      focus:outline-none focus:ring-2 focus:ring-blue-500
-                     dark:text-white"
+                     dark:text-blue-500 transition-colors duration-300"
             />
           </div>
 
@@ -44,11 +44,10 @@
           <!-- Broj predmeta -->
 
           <div
-            class="bg-white dark:bg-slate-800 rounded-2xl shadow-lg p-6"
-          >
+            class="bg-gradient-to-br from-sky-50 to-blue-100 dark:from-slate-800 dark:to-slate-700 rounded-2xl shadow-lg border border-sky-200 dark:border-slate-600 p-6">
             <p class="text-sm text-slate-500">📚 Predmeti</p>
 
-            <h2 class="text-3xl font-bold mt-2 dark:text-white">
+            <h2 class="text-3xl font-bold mt-2 dark:text-blue-500">
               {{ stats.subjects }}
             </h2>
           </div>
@@ -56,11 +55,10 @@
           <!-- Broj sesija -->
 
           <div
-            class="bg-white dark:bg-slate-800 rounded-2xl shadow-lg p-6"
-          >
+            class="bg-gradient-to-br from-sky-50 to-blue-100 dark:from-slate-800 dark:to-slate-700 rounded-2xl shadow-lg border border-sky-200 dark:border-slate-600 p-6"          >
             <p class="text-sm text-slate-500">📝 Sesije</p>
 
-            <h2 class="text-3xl font-bold mt-2 dark:text-white">
+            <h2 class="text-3xl font-bold mt-2 dark:text-blue-500">
               {{ stats.sessions }}
             </h2>
           </div>
@@ -68,13 +66,13 @@
           <!-- Fokus -->
 
           <div
-            class="bg-white dark:bg-slate-800 rounded-2xl shadow-lg p-6"
+            class="bg-gradient-to-br from-sky-50 to-blue-100 dark:from-slate-800 dark:to-slate-700 rounded-2xl shadow-lg border border-sky-200 dark:border-slate-600 p-6"
           >
             <p class="text-sm text-slate-500">
               ⭐ Prosječan fokus
             </p>
 
-            <h2 class="text-3xl font-bold mt-2 dark:text-white">
+            <h2 class="text-3xl font-bold mt-2 dark:text-blue-500">
               {{ stats.focus }}
             </h2>
           </div>
@@ -82,13 +80,13 @@
           <!-- Produktivnost -->
 
           <div
-            class="bg-white dark:bg-slate-800 rounded-2xl shadow-lg p-6"
+            class="bg-gradient-to-br from-sky-50 to-blue-100 dark:from-slate-800 dark:to-slate-700 rounded-2xl shadow-lg border border-sky-200 dark:border-slate-600 p-6"
           >
             <p class="text-sm text-slate-500">
               🧠 Produktivnost
             </p>
 
-            <h2 class="text-3xl font-bold mt-2 dark:text-white">
+            <h2 class="text-3xl font-bold mt-2 dark:text-blue-500">
               {{ stats.productivity }}%
             </h2>
           </div>
@@ -105,7 +103,7 @@
 
             <div
               v-if="loading"
-              class="bg-white dark:bg-slate-800 rounded-2xl shadow-lg p-10 text-center"
+              class="bg-gradient-to-br from-sky-50 to-blue-100 dark:from-slate-800 dark:to-slate-700 rounded-2xl shadow-lg p-10 text-center"
             >
               <p class="text-lg dark:text-white">
                 Učitavanje podataka...
@@ -114,7 +112,7 @@
 
             <div
               v-else-if="filteredSubjects.length === 0"
-              class="bg-white dark:bg-slate-800 rounded-2xl shadow-lg p-10 text-center"
+              class="bg-gradient-to-br from-sky-50 to-blue-100 dark:from-slate-800 dark:to-slate-700 rounded-2xl shadow-lg p-10 text-center"
             >
               <h2 class="text-2xl font-semibold dark:text-white mb-2">
                 Nema pronađenih predmeta
@@ -145,7 +143,7 @@
           <div>
 
             <div
-              class="bg-white dark:bg-slate-800 rounded-2xl shadow-lg p-6 sticky top-6"
+              class="bg-gradient-to-br from-sky-50 to-blue-100 dark:from-slate-800 dark:to-slate-700 rounded-2xl shadow-lg border border-sky-200 dark:border-slate-600 p-6 sticky top-6"
             >
 
               <h2
@@ -163,7 +161,7 @@
                   </p>
 
                   <p
-                    class="font-semibold text-lg dark:text-white mt-1"
+                    class="font-semibold text-lg dark:text-blue-500 mt-1"
                   >
                     {{ bestSubject.name }}
                   </p>
@@ -177,9 +175,9 @@
                   </p>
 
                   <p
-                    class="font-semibold text-lg dark:text-white mt-1"
+                    class="font-semibold text-lg dark:text-blue-500 mt-1"
                   >
-                    {{ bestSubject.focus }}
+                    {{ bestSubject.avg_focus ?? '-' }}
                   </p>
 
                 </div>
@@ -328,7 +326,7 @@ const bestSubject = computed(() => {
 
       name: "-",
 
-      focus: "-"
+      avg_focus: "-"
 
     };
 
