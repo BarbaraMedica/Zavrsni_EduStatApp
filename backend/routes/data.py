@@ -21,7 +21,10 @@ def subjects():
                 "_id": "$subject",
                 "sessions": {"$sum": 1},
                 "avg_focus": {"$avg": "$input.focus"},
-                "productivity": {"$avg": "$probability"}
+                "avg_stress": {"$avg": "$input.stress"},
+                "avg_duration": {"$avg": "$input.study_duration"},
+                "productivity": {"$avg": "$probability"},
+                "last_created_at": {"$max": "$created_at"}
             }
         },
         {
@@ -29,7 +32,15 @@ def subjects():
                 "name": "$_id",
                 "sessions": 1,
                 "avg_focus": {"$round": ["$avg_focus", 1]},
-                "productivity": {"$round": [{"$multiply": ["$productivity", 100]}, 0]}
+                "avg_stress": {"$round": ["$avg_stress", 1]},
+                "avg_duration": {"$round": ["$avg_duration", 0]},
+                "productivity": {"$round": [{"$multiply": ["$productivity", 100]}, 0]},
+                "last_session": {
+                    "$dateToString": {
+                        "format": "%d.%m.%Y",
+                        "date": "$last_created_at"
+                    }
+                }
             }
         }
     ]
