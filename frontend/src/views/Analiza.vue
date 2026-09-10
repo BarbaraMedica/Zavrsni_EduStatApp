@@ -7,639 +7,368 @@
 
       <Sidebar :darkMode="darkMode" />
 
-      <main class="flex-1 p-8">
+      <main class="flex-1 p-6">
 
-        <!-- HEADER -->
+        <div class="max-w-7xl mx-auto">
 
-        <div class="flex justify-between items-center mb-8">
+          <div class="flex justify-between items-center mb-8">
+            <div>
+              <h1
+                class="text-3xl font-bold"
+                :class="darkMode ? 'text-white' : 'text-slate-800'"
+              >
+                AI Analiza
+              </h1>
 
-          <div>
+              <p
+                class="mt-2"
+                :class="darkMode ? 'text-slate-400' : 'text-slate-500'"
+              >
+                Detaljna analiza tvojih navika učenja pomoću umjetne inteligencije.
+              </p>
+            </div>
 
-            <h1 class="text-4xl font-bold text-sky-700">
+            <div class="flex items-center gap-3">
+              <button
+                @click="loadFullAnalysis"
+                :disabled="loading"
+                class="px-5 py-3 rounded-xl font-semibold transition"
+                :class="
+                  loading
+                    ? 'bg-slate-400 cursor-not-allowed text-white'
+                    : 'bg-blue-600 hover:bg-blue-700 text-white'
+                "
+              >
+                {{ loading ? "Analiziram..." : "Osvježi analizu" }}
+              </button>
 
-              🧠 AI analiza učenja
+              <button
+                @click="darkMode = !darkMode; localStorage.setItem('darkMode', String(darkMode))"
+                class="bg-slate-700 hover:bg-slate-800 text-white px-4 py-2 rounded-xl transition"
+              >
+                {{ darkMode ? '☀️ Light' : '🌙 Dark' }}
+              </button>
+            </div>
+          </div>
 
-            </h1>
+          <div
+            v-if="error"
+            class="mb-6 p-4 rounded-xl border"
+            :class="
+              darkMode
+                ? 'bg-red-900/30 border-red-700 text-red-300'
+                : 'bg-red-50 border-red-200 text-red-700'
+            "
+          >
+            {{ error }}
+          </div>
+
+          <div
+            v-if="loading"
+            class="rounded-2xl p-8 mb-6 text-center shadow"
+            :class="
+              darkMode
+                ? 'bg-slate-800'
+                : 'bg-white'
+            "
+          >
+            <div class="text-4xl mb-4">
+              🤖
+            </div>
+
+            <h2 class="text-xl font-semibold mb-2">
+              AI analizira tvoje podatke...
+            </h2>
 
             <p
               :class="darkMode ? 'text-slate-400' : 'text-slate-500'"
-              class="mt-2"
             >
-
-              Personalizirana analiza studentskih navika učenja
-
+              Analiziraju se posljednje sesije učenja, predmeti, san,
+              fokus, stres, energija, trajanje učenja i rezultati modela.
             </p>
-
-          </div>
-
-          <button
-
-            @click="generateDailyAnalysis"
-
-            :disabled="loading"
-
-            class="bg-sky-600 hover:bg-sky-700 text-white px-6 py-3 rounded-xl shadow"
-
-          >
-
-            {{ loading ? "Analiziram..." : "🔄 Generiraj novu AI analizu" }}
-
-          </button>
-
-        </div>
-
-
-
-        <!-- AI STATUS -->
-
-        <div class="grid grid-cols-1 lg:grid-cols-4 gap-6 mb-8">
-
-          <div
-            class="rounded-2xl bg-gradient-to-br from-sky-500 to-blue-600
-                   text-white p-6 shadow-lg"
-          >
-
-            <p class="text-sm opacity-80">
-
-              Trenutno vrijeme
-
-            </p>
-
-            <h2 class="text-3xl font-bold mt-3">
-
-              {{ currentTime }}
-
-            </h2>
-
-            <p class="mt-2 opacity-80">
-
-              {{ currentDate }}
-
-            </p>
-
-          </div>
-
-
-
-          <div
-            :class="darkMode
-              ? 'bg-slate-800'
-              : 'bg-white'"
-            class="rounded-2xl p-6 shadow-lg"
-          >
-
-            <p class="text-slate-500">
-
-              Najbolje vrijeme
-
-            </p>
-
-            <h2 class="text-2xl font-bold text-sky-600 mt-2">
-
-              {{ bestTime }}
-
-            </h2>
-
-            <p class="mt-3 text-sm text-slate-500">
-
-              prema AI analizi
-
-            </p>
-
-          </div>
-
-
-
-          <div
-            :class="darkMode
-              ? 'bg-slate-800'
-              : 'bg-white'"
-            class="rounded-2xl p-6 shadow-lg"
-          >
-
-            <p class="text-slate-500">
-
-              Preporučeni predmet
-
-            </p>
-
-            <h2 class="text-2xl font-bold text-sky-600 mt-2">
-
-              {{ recommendedSubject }}
-
-            </h2>
-
-            <p class="mt-3 text-sm text-slate-500">
-
-              najveća očekivana produktivnost
-
-            </p>
-
-          </div>
-
-
-
-          <div
-            :class="darkMode
-              ? 'bg-slate-800'
-              : 'bg-white'"
-            class="rounded-2xl p-6 shadow-lg"
-          >
-
-            <p class="text-slate-500">
-
-              AI procjena
-
-            </p>
-
-            <h2
-              class="text-2xl font-bold mt-2"
-              :class="predictionColor"
-            >
-
-              {{ prediction }}
-
-            </h2>
-
-            <p class="mt-3 text-sm text-slate-500">
-
-              {{ probability }} %
-
-            </p>
-
-          </div>
-
-        </div>
-
-
-
-        <!-- AI PREPORUKA -->
-
-        <div
-          :class="darkMode
-            ? 'bg-slate-800'
-            : 'bg-white'"
-          class="rounded-2xl shadow-lg p-8 mb-8"
-        >
-
-          <div class="flex items-center gap-3 mb-6">
-
-            <div
-              class="w-12 h-12 rounded-full bg-sky-500
-                     flex items-center justify-center text-white text-xl"
-            >
-
-              🤖
-
-            </div>
-
-            <div>
-
-              <h2 class="text-2xl font-bold">
-
-                AI preporuka za danas
-
-              </h2>
-
-              <p
-                :class="darkMode
-                  ? 'text-slate-400'
-                  : 'text-slate-500'"
-              >
-
-                Generirano na temelju prethodnih analiza i
-                Random Forest modela.
-
-              </p>
-
-            </div>
-
           </div>
 
           <div
-            class="rounded-xl bg-sky-50 border border-sky-200
-                   p-6 whitespace-pre-line leading-8"
-            :class="darkMode
-              ? 'bg-slate-700 border-slate-600'
-              : ''"
+            v-if="!loading && analysis"
+            class="rounded-2xl p-6 shadow mb-8"
+            :class="
+              darkMode
+                ? 'bg-slate-800'
+                : 'bg-white'
+            "
           >
-
-            {{ aiAdvice }}
-
-          </div>
-
-        </div>
-
-
-
-        <!-- TIMELINE -->
-
-        <div
-          :class="darkMode
-            ? 'bg-slate-800'
-            : 'bg-white'"
-          class="rounded-2xl shadow-lg p-8 mb-8"
-        >
-
-          <h2 class="text-2xl font-bold mb-6">
-
-            📈 Preporučena produktivnost tijekom dana
-
-          </h2>
-
-          <div
-            v-for="slot in timeline"
-            :key="slot.hour"
-            class="mb-5"
-          >
-
-            <div class="flex justify-between mb-2">
-
-              <span class="font-medium">
-
-                {{ slot.hour }}
-
-              </span>
-
-              <span class="text-slate-500">
-
-                {{ slot.label }}
-
-              </span>
-
-            </div>
-
-            <div
-              class="w-full h-4 rounded-full overflow-hidden bg-slate-200"
-            >
-
+            <div class="flex items-center gap-3 mb-6">
               <div
-
-                class="h-4 bg-sky-500 rounded-full"
-
-                :style="{
-
-                  width: slot.score + '%'
-
-                }"
-
-              ></div>
-
-            </div>
-
-          </div>
-
-        </div>
-
-
-
-        <!-- POVIJEST -->
-
-        <div
-          :class="darkMode
-            ? 'bg-slate-800'
-            : 'bg-white'"
-          class="rounded-2xl shadow-lg p-8"
-        >
-
-          <div class="flex justify-between items-center mb-6">
-
-            <h2 class="text-2xl font-bold">
-
-              📚 Povijest AI analiza
-
-            </h2>
-
-            <span class="text-slate-500">
-
-              {{ analyses.length }} analiza
-
-            </span>
-
-          </div>
-
-          <div
-            v-if="analyses.length===0"
-            class="text-center py-12 text-slate-500"
-          >
-
-            Još nema spremljenih analiza.
-
-          </div>
-
-          <div
-            v-else
-            class="space-y-5"
-          >
-
-            <div
-
-              v-for="analysis in analyses"
-
-              :key="analysis._id"
-
-              class="rounded-xl border border-sky-100
-                     bg-sky-50 p-5"
-
-              :class="darkMode
-                ? 'bg-slate-700 border-slate-600'
-                : ''"
-
-            >
-
-              <div class="flex justify-between items-center">
-
-                <div>
-
-                  <h3 class="font-bold text-lg">
-
-                    {{ analysis.subject }}
-
-                  </h3>
-
-                  <p class="text-sm text-slate-500">
-
-                    {{ analysis.date }}
-
-                  </p>
-
-                </div>
-
-                <span
-                  class="bg-sky-500 text-white
-                         px-4 py-1 rounded-full text-sm"
-                >
-
-                  AI analiza
-
-                </span>
-
+                class="w-12 h-12 rounded-xl flex items-center justify-center text-2xl"
+                :class="
+                  darkMode
+                    ? 'bg-blue-900/40'
+                    : 'bg-blue-100'
+                "
+              >
+                🤖
               </div>
 
-              <p
-                class="mt-5 whitespace-pre-line leading-7"
-              >
+              <div>
+                <h2 class="text-2xl font-bold">
+                  Detaljna AI analiza
+                </h2>
 
-                {{ analysis.text }}
-
-              </p>
-
+                <p
+                  class="text-sm"
+                  :class="
+                    darkMode
+                      ? 'text-slate-400'
+                      : 'text-slate-500'
+                  "
+                >
+                  Analiza posljednjih 10 sesija učenja
+                </p>
+              </div>
             </div>
 
+            <div
+              class="max-w-none leading-7"
+              :class="darkMode ? 'text-slate-200' : 'text-slate-700'"
+              v-html="formattedAnalysis"
+            ></div>
+          </div>
+
+          <div
+            v-if="!loading && sessions.length > 0"
+            class="rounded-2xl p-6 shadow"
+            :class="
+              darkMode
+                ? 'bg-slate-800'
+                : 'bg-white'
+            "
+          >
+            <div class="flex justify-between items-center mb-6">
+              <div>
+                <h2 class="text-2xl font-bold">
+                  Analizirane sesije
+                </h2>
+
+                <p
+                  class="text-sm mt-1"
+                  :class="
+                    darkMode
+                      ? 'text-slate-400'
+                      : 'text-slate-500'
+                  "
+                >
+                  Podaci koji su korišteni za izradu AI analize
+                </p>
+              </div>
+
+              <span
+                class="px-3 py-1 rounded-full text-sm font-semibold"
+                :class="
+                  darkMode
+                    ? 'bg-blue-900/40 text-blue-300'
+                    : 'bg-blue-100 text-blue-700'
+                "
+              >
+                {{ sessions.length }} sesija
+              </span>
+            </div>
+
+            <div class="overflow-x-auto">
+              <table class="w-full text-left">
+                <thead>
+                  <tr
+                    class="border-b"
+                    :class="
+                      darkMode
+                        ? 'border-slate-700'
+                        : 'border-slate-200'
+                    "
+                  >
+                    <th class="py-3 px-3">Predmet</th>
+                    <th class="py-3 px-3">Trajanje</th>
+                    <th class="py-3 px-3">San</th>
+                    <th class="py-3 px-3">Fokus</th>
+                    <th class="py-3 px-3">Stres</th>
+                    <th class="py-3 px-3">Energija</th>
+                    <th class="py-3 px-3">Predikcija</th>
+                  </tr>
+                </thead>
+
+                <tbody>
+                  <tr
+                    v-for="(session, index) in sessions"
+                    :key="session._id || session.date || index"
+                    class="border-b last:border-b-0"
+                    :class="
+                      darkMode
+                        ? 'border-slate-700'
+                        : 'border-slate-100'
+                    "
+                  >
+                    <td class="py-4 px-3 font-medium">
+                      {{ session.subject || "Nije uneseno" }}
+                    </td>
+
+                    <td class="py-4 px-3">
+                      {{ session.study_duration ?? "—" }}
+                      <span v-if="session.study_duration">
+                        min
+                      </span>
+                    </td>
+
+                    <td class="py-4 px-3">
+                      {{ session.sleep_hours ?? "—" }}
+                      <span v-if="session.sleep_hours">
+                        h
+                      </span>
+                    </td>
+
+                    <td class="py-4 px-3">
+                      {{ session.focus_level ?? "—" }}
+                    </td>
+
+                    <td class="py-4 px-3">
+                      {{ session.stress_level ?? "—" }}
+                    </td>
+
+                    <td class="py-4 px-3">
+                      {{ session.energy_level ?? "—" }}
+                    </td>
+
+                    <td class="py-4 px-3">
+                      <span
+                        v-if="session.prediction"
+                        class="px-3 py-1 rounded-lg text-sm font-medium"
+                        :class="
+                          darkMode
+                            ? 'bg-green-900/40 text-green-300'
+                            : 'bg-green-100 text-green-700'
+                        "
+                      >
+                        {{ session.prediction }}
+                      </span>
+
+                      <span v-else>
+                        —
+                      </span>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div
+            v-if="!loading && !analysis && sessions.length === 0"
+            class="rounded-2xl p-10 text-center shadow"
+            :class="
+              darkMode
+                ? 'bg-slate-800'
+                : 'bg-white'
+            "
+          >
+            <div class="text-5xl mb-4">
+              📊
+            </div>
+
+            <h2 class="text-xl font-bold mb-2">
+              Nema dovoljno podataka
+            </h2>
+
+            <p
+              :class="
+                darkMode
+                  ? 'text-slate-400'
+                  : 'text-slate-500'
+              "
+            >
+              Zabilježi nekoliko sesija učenja kako bi AI mogao
+              napraviti detaljnu analizu tvojih navika.
+            </p>
           </div>
 
         </div>
 
       </main>
-
     </div>
-
   </div>
 </template>
 
-<script setup>
-import { ref, onMounted, onBeforeUnmount, computed } from "vue"
-import axios from "axios"
-import Sidebar from "../components/Sidebar.vue"
+<script>
+import { ref, onMounted, watch, computed } from "vue";
+import Sidebar from "../components/Sidebar.vue";
+import api from "../../services/api";
 
-const darkMode = ref(false)
+export default {
+  name: "AIAnalysis",
 
-const loading = ref(false)
-
-const analyses = ref([])
-
-const prediction = ref("-")
-const probability = ref(0)
-
-const aiAdvice = ref(
-  "Kliknite na 'Generiraj novu AI analizu' kako bi aplikacija analizirala vaše dosadašnje navike."
-)
-
-const bestTime = ref("-")
-const recommendedSubject = ref("-")
-
-const currentTime = ref("")
-const currentDate = ref("")
-
-const api = "http://127.0.0.1:5000"
-
-const predictionColor = computed(() => {
-
-  if (prediction.value.includes("Dobro"))
-    return "text-green-600"
-
-  if (prediction.value.includes("Nije"))
-    return "text-red-600"
-
-  return "text-sky-600"
-
-})
-
-const timeline = ref([
-  {
-    hour:"06:00",
-    score:20,
-    label:"Niska produktivnost"
+  components: {
+    Sidebar
   },
-  {
-    hour:"08:00",
-    score:55,
-    label:"Dobra produktivnost"
-  },
-  {
-    hour:"10:00",
-    score:80,
-    label:"Vrlo dobro"
-  },
-  {
-    hour:"12:00",
-    score:95,
-    label:"Najbolje vrijeme"
-  },
-  {
-    hour:"14:00",
-    score:70,
-    label:"Dobro"
-  },
-  {
-    hour:"16:00",
-    score:90,
-    label:"Preporučeno"
-  },
-  {
-    hour:"18:00",
-    score:75,
-    label:"Dobro"
-  },
-  {
-    hour:"20:00",
-    score:45,
-    label:"Pad fokusa"
-  },
-  {
-    hour:"22:00",
-    score:15,
-    label:"Nije preporučljivo"
-  }
-])
 
-function updateClock(){
+  setup() {
+    const analysis = ref("");
+    const sessions = ref([]);
+    const loading = ref(false);
+    const error = ref("");
+    const formattedAnalysis = computed(() => {
+      return analysis.value
+        .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>")
+        .replace(/^---$/gm, "")
+        .replace(/\n{3,}/g, "\n\n")
+        .replace(/\n- /g, "\n• ");
+    });
 
-  const now = new Date()
+    const darkMode = ref(
+      localStorage.getItem("darkMode") === "true"
+    );
 
-  currentTime.value =
-    now.toLocaleTimeString(
-      "hr-HR",
-      {
-        hour:"2-digit",
-        minute:"2-digit"
+    const syncDarkMode = () => {
+      localStorage.setItem("darkMode", String(darkMode.value));
+    };
+
+    watch(darkMode, () => {
+      syncDarkMode();
+    }, { immediate: true });
+
+    const loadFullAnalysis = async () => {
+      loading.value = true;
+      error.value = "";
+
+      try {
+        const response = await api.get("/full-analysis");
+
+        analysis.value = response.data.analysis || "";
+        sessions.value = response.data.sessions || [];
+
+      } catch (err) {
+        console.error("Greška kod dohvaćanja AI analize:", err);
+
+        if (err.response?.status === 401) {
+          error.value = "Sesija je istekla. Prijavi se ponovno.";
+        } else {
+          error.value =
+            err.response?.data?.error ||
+            "Dogodila se greška prilikom dohvaćanja AI analize.";
+        }
+      } finally {
+        loading.value = false;
       }
-    )
+    };
 
-  currentDate.value =
-    now.toLocaleDateString(
-      "hr-HR",
-      {
-        weekday:"long",
-        day:"numeric",
-        month:"long",
-        year:"numeric"
-      }
-    )
+    onMounted(() => {
+      loadFullAnalysis();
+    });
 
-}
-let timer = null
-
-async function loadHistory() {
-
-  try {
-
-    const response = await axios.get(
-      `${api}/analyses`
-    )
-
-    analyses.value = response.data
-
+    return {
+      analysis,
+      formattedAnalysis,
+      sessions,
+      loading,
+      error,
+      darkMode,
+      loadFullAnalysis
+    };
   }
-
-  catch(error){
-
-    console.error(error)
-
-  }
-
-}
-
-async function generateDailyAnalysis(){
-
-  loading.value = true
-
-  try{
-
-    const now = new Date()
-
-    const response = await axios.post(
-
-      `${api}/daily-analysis`,
-
-      {
-
-        current_hour: now.getHours(),
-
-        current_date: now.toISOString()
-
-      }
-
-    )
-
-    prediction.value =
-      response.data.prediction
-
-    probability.value =
-      response.data.probability
-
-    aiAdvice.value =
-      response.data.ai_analysis
-
-    bestTime.value =
-      response.data.best_time
-
-    recommendedSubject.value =
-      response.data.subject
-
-    if(response.data.timeline){
-
-      timeline.value =
-        response.data.timeline
-
-    }
-
-    await loadHistory()
-
-  }
-
-  catch(error){
-
-    console.error(error)
-
-    aiAdvice.value =
-      "AI analiza trenutno nije dostupna."
-
-  }
-
-  finally{
-
-    loading.value = false
-
-  }
-
-}
-
-onMounted(()=>{
-
-  updateClock()
-
-  timer = setInterval(
-
-    updateClock,
-
-    60000
-
-  )
-
-  loadHistory()
-
-  generateDailyAnalysis()
-
-})
-
-onBeforeUnmount(()=>{
-
-  clearInterval(timer)
-
-})
+};
 </script>
-
-<style scoped>
-
-::-webkit-scrollbar{
-
-  width:8px;
-
-}
-
-::-webkit-scrollbar-thumb{
-
-  background:#38bdf8;
-
-  border-radius:20px;
-
-}
-
-::-webkit-scrollbar-track{
-
-  background:transparent;
-
-}
-
-</style>
