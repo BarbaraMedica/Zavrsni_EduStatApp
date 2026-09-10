@@ -1,13 +1,17 @@
 import os
+from datetime import datetime
+
 import joblib
 import numpy as np
 
 from flask import Blueprint, request, jsonify
-from datetime import datetime
+from flask_jwt_extended import jwt_required, get_jwt_identity
 
 from database.mongo import predictions
 
+
 predict_bp = Blueprint("predict", __name__)
+
 
 MODEL_PATH = os.path.join(
     os.path.dirname(__file__),
@@ -21,12 +25,15 @@ model = joblib.load(MODEL_PATH)
 
 
 @predict_bp.route("/predict", methods=["POST"])
+@jwt_required()
 def predict():
 
-    data = request.get_json()
+    data = request.get_json() or {}
+
+    # ID trenutno prijavljenog korisnika
+    user_id = get_jwt_identity()
 
     required_fields = [
-
         "sleep_hours",
         "study_duration",
         "breaks",
@@ -34,27 +41,34 @@ def predict():
         "focus",
         "stress",
         "energy"
-
     ]
 
-    for field in required_fields:
+    missing_fields = [
+        field
+        for field in required_fields
+        if field not in data
+    ]
 
-        if field not in data:
+    if missing_fields:
+        return jsonify({
+            "error": f"Nedostaju polja: {', '.join(missing_fields)}"
+        }), 400
 
-            return jsonify({
-                "error": f"Nedostaje polje {field}"
-            }),400
+    try:
+        sleep_hours = float(data["sleep_hours"])
+        study_duration = float(data["study_duration"])
+        breaks = int(data["breaks"])
+        time_of_day = int(data["time_of_day"])
+        focus = float(data["focus"])
+        stress = float(data["stress"])
+        energy = float(data["energy"])
 
-    sleep_hours = float(data["sleep_hours"])
-    study_duration = float(data["study_duration"])
-    breaks = int(data["breaks"])
-    time_of_day = int(data["time_of_day"])
-    focus = float(data["focus"])
-    stress = float(data["stress"])
-    energy = float(data["energy"])
+    except (ValueError, TypeError):
+        return jsonify({
+            "error": "Vrijednosti ulaznih podataka nisu ispravne."
+        }), 400
 
     features = np.array([[
-
         sleep_hours,
         study_duration,
         breaks,
@@ -62,10 +76,9 @@ def predict():
         focus,
         stress,
         energy
-
     ]])
 
-    prediction = model.predict(features)[0]
+    prediction = int(model.predict(features)[0])
 
     probability = round(
         float(model.predict_proba(features)[0][1]),
@@ -80,38 +93,37 @@ def predict():
 
     predictions.insert_one({
 
-        "subject": data.get("subject",""),
+        "user_id": user_id,
 
-        "date": data.get("date",""),
+        "subject": data.get("subject", ""),
 
-        "notes": data.get("notes",""),
+        "date": data.get("date", ""),
 
-        "input":{
+        "notes": data.get("notes", ""),
 
-            "sleep_hours":sleep_hours,
-            "study_duration":study_duration,
-            "breaks":breaks,
-            "time_of_day":time_of_day,
-            "focus":focus,
-            "stress":stress,
-            "energy":energy
-
+        "input": {
+            "sleep_hours": sleep_hours,
+            "study_duration": study_duration,
+            "breaks": breaks,
+            "time_of_day": time_of_day,
+            "focus": focus,
+            "stress": stress,
+            "energy": energy
         },
 
-        "prediction":int(prediction),
+        "prediction": prediction,
 
-        "result":result,
+        "result": result,
 
-        "probability":probability,
+        "probability": probability,
 
-        "created_at":datetime.utcnow()
-
+        "created_at": datetime.utcnow()
     })
 
     return jsonify({
 
-        "rezultat":result,
+        "rezultat": result,
 
-        "vjerojatnost":probability
+        "vjerojatnost": probability
 
     })
