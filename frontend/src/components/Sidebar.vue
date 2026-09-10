@@ -23,13 +23,22 @@
       <h2 class="text-4xl font-bold text-sky-600 mt-2">82</h2>
       <p class="text-sm text-emerald-500 mt-2">Produktivnost raste 📈</p>
     </div>
+        <!-- ODJAVA -->
+    <button
+      @click="logout"
+      class="w-full mt-6 p-3 rounded-xl text-left transition"
+      :class="darkMode
+        ? 'bg-red-900/30 text-red-300 hover:bg-red-800/30'
+        : 'bg-red-50 text-red-600 hover:bg-red-150'"
+    >
+      Odjava
+    </button>
   </aside>
 </template>
 
 <script setup>
 import { computed } from 'vue'
-import { useRoute } from 'vue-router'
-
+import { useRoute, useRouter } from 'vue-router'
 const props = defineProps({
   darkMode: {
     type: Boolean,
@@ -39,8 +48,16 @@ const props = defineProps({
 
 const route = useRoute()
 
+const router = useRouter()
+
+const logout = () => {
+  localStorage.removeItem("token")
+  localStorage.removeItem("user")
+  router.push("/")
+}
+
 const links = [
-  { path: '/', label: 'Dashboard', icon: '📊' },
+  { path: '/dashboard', label: 'Dashboard', icon: '📊' },
   { path: '/analiza', label: 'AI analiza', icon: '🧠' },
   { path: '/zapisivanje', label: 'Zapisivanje', icon: '✍️' },
   { path: '/biljeske', label: 'Bilješke', icon: '📝' },
