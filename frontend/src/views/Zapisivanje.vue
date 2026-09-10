@@ -329,8 +329,8 @@
 <script setup>
 
 import { ref } from 'vue'
-import axios from 'axios'
 import Sidebar from '../components/Sidebar.vue'
+import api from "../../services/api"
 
 const darkMode = ref(false)
 
@@ -373,7 +373,7 @@ const form = ref({
 
 async function save() {
   try {
-    const response = await axios.post('http://127.0.0.1:5000/analyze', {
+    const response = await api.post('/analyze', {
       date: form.value.date,
       subject: form.value.subject,
       sleep_hours: Number(form.value.sleep_hours),
