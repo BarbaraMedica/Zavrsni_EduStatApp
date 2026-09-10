@@ -116,31 +116,14 @@
 
     <!-- Footer -->
 
-    <div
-      class="mt-6 flex justify-between items-center"
-    >
+    <div class="mt-6">
+      <p class="text-xs text-slate-500">
+        Zadnje učenje
+      </p>
 
-      <div>
-
-        <p class="text-xs text-slate-500">
-          Zadnje učenje
-        </p>
-
-        <p
-          class="font-medium dark:text-blue-500"
-        >
-          {{ subject.last_session || 'N/A' }}
-        </p>
-
-      </div>
-
-      <button
-        @click="$emit('details', subject)"
-        class="bg-blue-600 hover:bg-blue-700 text-white rounded-xl px-4 py-2 transition"
-      >
-        Detalji
-      </button>
-
+      <p class="font-medium dark:text-blue-500">
+        {{ subject.last_session || 'N/A' }}
+      </p>
     </div>
 
   </div>

@@ -231,8 +231,7 @@
                   </td>
 
                   <td class="py-3">
-                    {{ item.probability }}
-                  </td>
+                    {{ Math.round(Number(item.probability) * 100) }}%                  </td>
 
                 </tr>
 
@@ -252,9 +251,9 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
-import axios from 'axios'
 import Chart from 'chart.js/auto'
 import Sidebar from '../components/Sidebar.vue'
+import api from '../../services/api'
 
 const darkMode = ref(false)
 
@@ -271,9 +270,7 @@ async function loadStatistics() {
 
   try {
 
-    const response = await axios.get(
-      "http://127.0.0.1:5000/statistics"
-    )
+    const response = await api.get('/statistics')
 
     total.value = response.data.total
     avgFocus.value = response.data.avg_focus
