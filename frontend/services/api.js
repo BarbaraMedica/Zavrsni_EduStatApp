@@ -1,18 +1,18 @@
-const API_URL = "http://127.0.0.1:5000";
+import axios from "axios"
 
-export async function predict(data) {
+const api = axios.create({
+  baseURL: "http://127.0.0.1:5000"
+})
 
-    const response = await fetch(`${API_URL}/predict`, {
+api.interceptors.request.use((config) => {
 
-        method: "POST",
+  const token = localStorage.getItem("token")
 
-        headers: {
-            "Content-Type": "application/json"
-        },
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`
+  }
 
-        body: JSON.stringify(data)
+  return config
+})
 
-    });
-
-    return await response.json();
-}
+export default api
