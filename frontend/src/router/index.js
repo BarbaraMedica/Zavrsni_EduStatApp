@@ -7,9 +7,13 @@ import Biljeske from '../views/Biljeske.vue'
 import Zapisivanje from '../views/Zapisivanje.vue'
 import Predmeti from '../views/Predmeti.vue'
 import Postavke from '../views/Postavke.vue'
+import Login from '../views/Login.vue'
+import Registracija from '../views/Registracija.vue'
 
 const routes = [
-  { path: '/', component: Dashboard },
+  { path: '/', component: Login },
+  { path: '/dashboard', component: Dashboard },
+  { path: '/register', component: Registracija },
   { path: '/analiza', component: Analiza },
   { path: '/statistika', component: Statistika },
   { path: '/biljeske', component: Biljeske },
