@@ -264,56 +264,8 @@
               @click="save"
               class="w-full bg-sky-500 hover:bg-sky-600 text-white py-4 rounded-xl font-semibold transition shadow-md"
             >
-              Spremi AI analizu
+              Spremi sesiju
             </button>
-
-          </div>
-
-          <!-- AI RESULT -->
-          <div
-            :class="darkMode
-              ? 'bg-slate-800 border-slate-700'
-              : 'bg-white border-sky-100'"
-            class="rounded-2xl border p-6 shadow-sm h-fit"
-          >
-
-            <h2 class="text-xl font-semibold text-sky-700 mb-5">
-              🧠 AI Procjena
-            </h2>
-
-            <div class="space-y-5">
-
-              <div>
-                <p class="text-sm text-slate-500 mb-2">
-                  Predikcija produktivnosti
-                </p>
-
-                <div class="text-3xl font-bold text-sky-600">
-                  {{ result ? result.prediction : 'Čeka analizu...' }}
-                </div>
-              </div>
-
-              <div class="bg-sky-50 rounded-2xl p-4 border border-sky-100">
-                <h3 class="font-semibold text-sky-700 mb-2">
-                  AI Insight
-                </h3>
-
-                <p class="text-sm text-slate-600 leading-relaxed">
-                  {{ result ? result.ai_analysis : 'Nakon spremanja podataka, ovdje će se pojaviti AI analiza.' }}
-                </p>
-              </div>
-
-              <div class="bg-emerald-50 rounded-2xl p-4 border border-emerald-100">
-                <h3 class="font-semibold text-emerald-700 mb-2">
-                  Vjerojatnost
-                </h3>
-
-                <p class="text-sm text-slate-600 leading-relaxed">
-                  {{ result ? `${result.probability}%` : '—' }}
-                </p>
-              </div>
-
-            </div>
 
           </div>
 
@@ -387,7 +339,7 @@ async function save() {
     })
 
     result.value = response.data
-    alert('AI analiza spremljena u MongoDB')
+    alert('Sesija je spremljena.')
   } catch (error) {
     console.error(error)
     alert('Greška kod povezivanja s backendom')
