@@ -5,11 +5,6 @@ from flask_jwt_extended import JWTManager
 from dotenv import load_dotenv
 
 load_dotenv()  # Učitavanje varijabli iz .env datoteke
-key = os.getenv("GROQ_API_KEY")
-
-print("XAI KEY POSTOJI:", bool(key))
-print("XAI KEY POCETAK:", key[:8] if key else None)
-print("XAI KEY DULJINA:", len(key) if key else 0)
 
 from routes.predict import predict_bp
 from routes.statistics import statistics_bp
