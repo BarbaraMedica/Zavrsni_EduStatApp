@@ -73,7 +73,7 @@
             "
           >
             <div class="text-4xl mb-4">
-              🤖
+              
             </div>
 
             <h2 class="text-xl font-semibold mb-2">
@@ -106,7 +106,7 @@
                     : 'bg-blue-100'
                 "
               >
-                🤖
+                
               </div>
 
               <div>
@@ -128,10 +128,11 @@
             </div>
 
             <div
-              class="max-w-none leading-7"
+              class="max-w-none leading-7 whitespace-pre-line"
               :class="darkMode ? 'text-slate-200' : 'text-slate-700'"
-              v-html="formattedAnalysis"
-            ></div>
+            >
+              {{ analysis || 'Nema dostupne detaljne analize.' }}
+            </div>
           </div>
 
           <div
@@ -311,13 +312,6 @@ export default {
     const sessions = ref([]);
     const loading = ref(false);
     const error = ref("");
-    const formattedAnalysis = computed(() => {
-      return analysis.value
-        .replace(/\*\*(.*?)\*\*/g, "<strong>$1</strong>")
-        .replace(/^---$/gm, "")
-        .replace(/\n{3,}/g, "\n\n")
-        .replace(/\n- /g, "\n• ");
-    });
 
     const darkMode = ref(
       localStorage.getItem("darkMode") === "true"
@@ -362,7 +356,6 @@ export default {
 
     return {
       analysis,
-      formattedAnalysis,
       sessions,
       loading,
       error,

@@ -29,7 +29,7 @@
             @click="refreshData"
             class="bg-sky-500 hover:bg-sky-600 text-white px-4 py-2 rounded-xl transition"
           >
-            🔄 Osvježi AI
+             Osvježi AI
           </button>
 
           <button
@@ -90,7 +90,7 @@
           <div class="flex items-center justify-between mb-5">
             <div>
               <h2 class="text-xl font-semibold text-sky-700">
-                🧠 Tvoj optimalni trenutak za učenje
+                 Tvoj optimalni trenutak za učenje
               </h2>
 
               <p
@@ -101,7 +101,6 @@
               </p>
             </div>
 
-            <span class="text-3xl">🎯</span>
           </div>
 
           <div v-if="optimalData.hasData">
@@ -114,7 +113,7 @@
               >
                 <p class="text-xs text-slate-500 mb-1">Najproduktivniji predmet</p>
                 <p class="font-semibold">
-                  📚 {{ optimalData.subject }}
+                  {{ optimalData.subject }}
                 </p>
               </div>
 
@@ -166,7 +165,7 @@
                 : 'bg-sky-50 text-slate-600'"
               class="mt-4 rounded-xl p-4 text-sm leading-6"
             >
-              💡 Prema tvojim dosadašnjim rezultatima, najbolje uvjete za učenje
+               Prema tvojim dosadašnjim rezultatima, najbolje uvjete za učenje
               ostvaruješ uz približno
               <strong>{{ optimalData.sleep }} sati sna</strong>,
               tijekom
@@ -184,7 +183,7 @@
               : 'bg-sky-50 text-slate-500'"
             class="rounded-xl p-4 text-sm"
           >
-            Dodaj nekoliko sesija učenja kako bi StudyAI mogao
+            Dodaj nekoliko sesija učenja kako bi EduStat mogao
             pronaći tvoje optimalne uvjete za učenje.
           </div>
         </div>
@@ -195,7 +194,7 @@
             class="lg:col-span-2 rounded-2xl border p-6 shadow-sm"
           >
             <div class="flex justify-between items-center mb-4">
-              <h2 class="text-xl font-semibold text-sky-700">🧠 AI analiza</h2>
+              <h2 class="text-xl font-semibold text-sky-700"> AI analiza</h2>
             </div>
 
             <div class="space-y-5">
@@ -220,7 +219,7 @@
             :class="darkMode ? 'bg-slate-800 border-slate-700' : 'bg-white border-sky-100'"
             class="rounded-2xl border p-6 shadow-sm"
           >
-            <h2 class="text-xl font-semibold text-sky-700 mb-4">📚 Zadnje sesije</h2>
+            <h2 class="text-xl font-semibold text-sky-700 mb-4"> Zadnje sesije</h2>
             <div class="space-y-3">
               <div
                 v-for="(l, i) in [...logs].reverse().slice(0,5)"
@@ -239,7 +238,7 @@
           :class="darkMode ? 'bg-slate-800 border-slate-700' : 'bg-white border-sky-100'"
           class="rounded-2xl border p-6 shadow-sm mt-6"
         >
-          <h2 class="text-xl font-semibold text-sky-700 mb-5">📈 Tjedni pregled</h2>
+          <h2 class="text-xl font-semibold text-sky-700 mb-5"> Tjedni pregled</h2>
           <div class="space-y-4">
             <div v-for="d in chartData" :key="d.day">
               <div class="flex justify-between text-sm mb-1">
