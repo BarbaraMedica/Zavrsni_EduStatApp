@@ -20,7 +20,7 @@
           <div>
 
             <h1 class="text-3xl font-bold text-sky-700">
-              Povijest AI analiza 🧠
+              Povijest bilješki 📚
             </h1>
 
 
@@ -28,7 +28,7 @@
               :class="darkMode ? 'text-slate-400' : 'text-slate-500'"
               class="mt-1"
             >
-              Pregled spremljenih analiza, zaključaka i AI preporuka
+              Pregled spremljenih bilješki i napomena za pojedini predmet
             </p>
 
 
@@ -66,7 +66,7 @@
 
 
             <h2 class="text-xl font-semibold text-sky-700 mb-5">
-              Nova analiza
+              Nova bilješka
             </h2>
 
 
@@ -89,7 +89,7 @@
 
 
             <label class="text-sm text-slate-500">
-              Rezultat analize
+              Sadržaj bilješke
             </label>
 
 
@@ -97,7 +97,7 @@
 
               v-model="text"
 
-              placeholder="Unesi rezultat AI analize..."
+              placeholder="Unesi bilješku ili napomenu..."
 
               :class="darkMode
                 ? 'bg-slate-700 border-slate-600 text-white'
@@ -115,7 +115,7 @@
               class="w-full mt-6 bg-sky-500 hover:bg-sky-600 text-white py-4 rounded-xl font-semibold transition"
             >
 
-              Spremi analizu
+              Spremi bilješku
 
             </button>
 
@@ -138,7 +138,7 @@
 
 
             <h2 class="text-xl font-semibold text-sky-700 mb-5">
-              🤖 AI pomoć
+              📌 Napomena
             </h2>
 
 
@@ -147,13 +147,12 @@
 
 
               <h3 class="font-semibold text-sky-700">
-                Analiza znanja
+                Organizacija
               </h3>
 
 
               <p class="text-sm text-slate-600 mt-2">
-                Spremljene analize omogućuju praćenje područja
-                koja student treba dodatno ponoviti.
+                Bilješke pomažu pri praćenju ključnih tema, zadataka i pitanja za ponavljanje.
               </p>
 
 
@@ -165,13 +164,12 @@
 
 
               <h3 class="font-semibold text-emerald-700">
-                Preporuka
+                Savjet
               </h3>
 
 
               <p class="text-sm text-slate-600 mt-2">
-                Redovito analiziranje rezultata pomaže
-                poboljšanju procesa učenja.
+                Redovito zapisivanje napomena olakšava pregled i spremanje važnih detalja.
               </p>
 
 
@@ -204,7 +202,7 @@
 
 
             <h2 class="text-xl font-semibold text-sky-700">
-              📚 Spremljene analize
+              📚 Spremljene bilješke
             </h2>
 
 
@@ -224,7 +222,7 @@
             class="text-center py-10 text-slate-400"
           >
 
-            Nema spremljenih analiza.
+            Nema spremljenih bilješki.
 
           </div>
 
@@ -299,8 +297,8 @@
                 class="mt-4 bg-white/50 rounded-xl p-3 text-sm"
               >
 
-                💡 AI preporuka:
-                Nastaviti pratiti napredak i ponoviti ključne dijelove gradiva.
+                � Napomena:
+                Ova bilješka je spremljena u bazu i dostupna je u vašoj povijesti.
 
               </div>
 
@@ -331,8 +329,8 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
-import axios from 'axios'
 import Sidebar from '../components/Sidebar.vue'
+import api from '../../services/api'
 
 const darkMode = ref(false)
 
@@ -344,15 +342,14 @@ const text = ref('')
 
 
 const analyses = ref([])
-const apiBase = 'http://127.0.0.1:5000'
 
 const loadAnalyses = async () => {
   try {
-    const response = await axios.get(`${apiBase}/analyses`)
+    const response = await api.get('/analyses')
     analyses.value = response.data
   } catch (error) {
     console.error('Greška pri dohvaćanju analiza', error)
-    alert('Greška pri učitavanjem analiza.')
+    alert('Greška pri učitavanju analiza.')
   }
 }
 
@@ -360,46 +357,34 @@ const loadAnalyses = async () => {
 
 
 
-function save(){
-
-
-  if(!subject.value || !text.value){
-
-    alert("Unesi predmet i rezultat analize")
-
+async function save() {
+  if (!subject.value || !text.value) {
+    alert('Unesi predmet i sadržaj bilješke.')
     return
-
   }
 
+  try {
+    const response = await api.post('/analyses', {
+      subject: subject.value,
+      text: text.value,
+      date: new Date().toISOString().split('T')[0],
+      type: 'Bilješka'
+    })
 
+    analyses.value.unshift({
+      _id: response.data._id,
+      subject: response.data.subject,
+      text: response.data.text,
+      date: response.data.date,
+      type: response.data.type
+    })
 
-  analyses.value.push({
-
-    subject: subject.value,
-
-    text:text.value,
-
-    date:new Date()
-      .toLocaleDateString("hr-HR"),
-
-    type:"AI analiza"
-
-  })
-
-
-
-  localStorage.setItem(
-    "analyses",
-    JSON.stringify(analyses.value)
-  )
-
-
-
-  subject.value=''
-  text.value=''
-
-
-
+    subject.value = ''
+    text.value = ''
+  } catch (error) {
+    console.error('Greška pri spremanju bilješke:', error)
+    alert(error.response?.data?.error || 'Greška pri spremanju bilješke.')
+  }
 }
 
 
@@ -407,20 +392,22 @@ function save(){
 
 
 
-function removeAnalysis(index){
+async function removeAnalysis(index) {
+  const item = analyses.value[index]
+  if (!item || !item._id) return
 
-
-  analyses.value.splice(index,1)
-
-
-
-  localStorage.setItem(
-    "analyses",
-    JSON.stringify(analyses.value)
-  )
-
-
+  try {
+    await api.delete(`/analyses/${item._id}`)
+    analyses.value.splice(index, 1)
+  } catch (error) {
+    console.error('Greška pri brisanju bilješke:', error)
+    alert('Bilješka nije obrisana.')
+  }
 }
+
+onMounted(() => {
+  loadAnalyses()
+})
 
 
 

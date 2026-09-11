@@ -1,7 +1,7 @@
 <template>
   <aside :class="sidebarClass" class="w-72 min-h-screen border-r p-5 hidden lg:block">
     <div class="mb-8">
-      <h1 class="text-3xl font-bold text-sky-600">StudyAI</h1>
+      <h1 class="text-3xl font-bold text-sky-600">EduStat</h1>
       <p :class="descriptionClass" class="text-sm mt-1">AI analiza studentskih navika</p>
     </div>
 
@@ -18,11 +18,6 @@
       </router-link>
     </div>
 
-    <div :class="cardClass" class="mt-10 rounded-2xl p-5">
-      <p class="text-sm text-slate-500">AI Score</p>
-      <h2 class="text-4xl font-bold text-sky-600 mt-2">82</h2>
-      <p class="text-sm text-emerald-500 mt-2">Produktivnost raste 📈</p>
-    </div>
         <!-- ODJAVA -->
     <button
       @click="logout"

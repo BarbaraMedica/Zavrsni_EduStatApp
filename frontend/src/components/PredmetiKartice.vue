@@ -27,7 +27,6 @@
 
       </div>
 
-      <!-- Productivity -->
 
       <span
         :class="badgeClass"
