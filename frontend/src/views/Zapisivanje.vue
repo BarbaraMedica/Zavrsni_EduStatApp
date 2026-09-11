@@ -8,7 +8,8 @@
       <Sidebar :darkMode="darkMode" />
 
       <!-- MAIN -->
-      <main class="flex-1 p-6">
+      <main class="flex-1 p-6 flex justify-center">
+        <div class="w-full max-w-5xl">
 
         <!-- HEADER -->
         <div class="flex justify-between items-center mb-8">
@@ -37,15 +38,15 @@
         </div>
 
         <!-- MAIN GRID -->
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-
-          <!-- FORM -->
-          <div
-            :class="darkMode
-              ? 'bg-slate-800 border-slate-700'
-              : 'bg-white border-sky-100'"
-            class="lg:col-span-2 rounded-2xl border p-6 shadow-sm"
-          >
+        <div class="flex justify-center">
+          <div class="w-full max-w-4xl">
+            <!-- FORM -->
+            <div
+              :class="darkMode
+                ? 'bg-slate-800 border-slate-700'
+                : 'bg-white border-sky-100'"
+              class="rounded-2xl border p-6 shadow-sm"
+            >
 
             <!-- DATE + SUBJECT -->
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-5">
@@ -267,10 +268,11 @@
               Spremi sesiju
             </button>
 
+            </div>
           </div>
-
         </div>
 
+        </div>
       </main>
 
     </div>

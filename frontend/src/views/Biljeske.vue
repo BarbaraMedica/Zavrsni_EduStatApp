@@ -52,7 +52,7 @@
 
         <!-- GRID -->
 
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div class="grid grid-cols-1 xl:grid-cols-[1.6fr_1fr] gap-6">
 
 
           <!-- NEW ANALYSIS -->
@@ -61,7 +61,7 @@
             :class="darkMode
               ? 'bg-slate-800 border-slate-700'
               : 'bg-white border-sky-100'"
-            class="lg:col-span-2 rounded-2xl border p-6 shadow-sm"
+            class="rounded-2xl border p-6 shadow-sm"
           >
 
 
@@ -233,7 +233,7 @@
 
           <div
             v-else
-            class="grid grid-cols-1 md:grid-cols-2 gap-5"
+            class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5"
           >
 
 
