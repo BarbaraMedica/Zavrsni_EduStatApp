@@ -85,8 +85,8 @@
 <script setup>
 
 import { ref } from "vue"
-import axios from "axios"
 import { useRouter } from "vue-router"
+import api from "../../services/api"
 
 const router = useRouter()
 
@@ -103,8 +103,8 @@ async function register() {
 
   try {
 
-    await axios.post(
-      `${import.meta.env.VITE_API_URL}/register`,
+    await api.post(
+      "/auth/register",
       {
         username: username.value,
         email: email.value,
