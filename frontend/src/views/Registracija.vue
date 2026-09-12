@@ -104,13 +104,14 @@ async function register() {
   try {
 
     await axios.post(
-      "http://127.0.0.1:5000/auth/register",
+      `${import.meta.env.VITE_API_URL}/register`,
       {
         username: username.value,
         email: email.value,
         password: password.value
       }
     )
+    
 
     alert("Registracija uspješna!")
 
